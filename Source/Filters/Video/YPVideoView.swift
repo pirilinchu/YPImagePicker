@@ -69,12 +69,6 @@ public class YPVideoView: UIView {
     @objc internal func singleTap() {
         pauseUnpause()
     }
-    
-    @objc public func playerItemDidReachEnd(_ note: Notification) {
-        player.actionAtItemEnd = .none
-        player.seek(to: CMTime.zero)
-        player.play()
-    }
 }
 
 // MARK: - Video handling
@@ -112,7 +106,6 @@ extension YPVideoView {
     public func play() {
         player.play()
         showPlayImage(show: false)
-        addReachEndObserver()
     }
     
     public func pause() {
@@ -124,7 +117,6 @@ extension YPVideoView {
         player.pause()
         player.seek(to: CMTime.zero)
         showPlayImage(show: true)
-        removeReachEndObserver()
     }
     
     public func deallocate() {
@@ -144,19 +136,5 @@ extension YPVideoView {
         UIView.animate(withDuration: 0.1) {
             self.playImageView.alpha = show ? 0.8 : 0
         }
-    }
-    
-    public func addReachEndObserver() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(playerItemDidReachEnd(_:)),
-                                               name: .AVPlayerItemDidPlayToEndTime,
-                                               object: player.currentItem)
-    }
-    
-    /// Removes the observer for AVPlayerItemDidPlayToEndTime. Could be needed to implement own observer
-    public func removeReachEndObserver() {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: .AVPlayerItemDidPlayToEndTime,
-                                                  object: player.currentItem)
     }
 }

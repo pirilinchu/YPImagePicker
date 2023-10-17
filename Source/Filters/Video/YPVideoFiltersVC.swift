@@ -88,7 +88,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         setupNavigationBar(isFromSelectionVC: self.isFromSelectionVC)
 
         // Remove the default and add a notification to repeat playback from the start
-        videoView.removeReachEndObserver()
         NotificationCenter.default
             .addObserver(self,
                          selector: #selector(itemDidFinishPlaying(_:)),
@@ -283,6 +282,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     @objc private func itemDidFinishPlaying(_ notification: Notification) {
         if let startTime = trimmerView.startTime {
             videoView.player.seek(to: startTime)
+            videoView.player.play()
         }
     }
     
@@ -325,12 +325,14 @@ extension YPVideoFiltersVC: TrimmerViewDelegate {
         videoView.play()
         startPlaybackTimeChecker()
         updateCoverPickerBounds()
+        navigationItem.rightBarButtonItem?.isEnabled = true
     }
     
     public func didChangePositionBar(_ playerTime: CMTime) {
         stopPlaybackTimeChecker()
         videoView.pause()
         videoView.player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        navigationItem.rightBarButtonItem?.isEnabled = false
     }
 }
 
